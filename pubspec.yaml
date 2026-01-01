@@ -1,0 +1,47 @@
+name: focus_app_v2_final
+description: "A new Flutter project."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  # --- State Management ---
+  flutter_riverpod: ^2.5.1
+
+  # --- Data Modeling ve Utilities ---
+  equatable: ^2.0.5
+  cupertino_icons: ^1.0.8
+  collection: any
+
+  # --- Firebase Paketleri ---
+  firebase_core: ^2.25.4
+  firebase_auth: ^4.16.0
+  cloud_firestore: ^4.15.4
+
+  # --- UI/UX Bileşenleri ---
+  intl: ^0.20.2 # DÜZELTME: Sürüm çakışması giderildi.
+  table_calendar: ^3.1.1
+  google_fonts: ^6.2.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  # --- Linting ve Test Paketleri ---
+  flutter_lints: ^3.0.0
+  mocktail: ^1.0.3
+
+dependency_overrides:
+  # Bu bölüm genellikle geçici çözümler içindir. 
+  # flutter pub get sonrası bir problem çıkmazsa silinebilir.
+
+flutter:
+  uses-material-design: true

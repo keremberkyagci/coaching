@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "579162621803",
+    "project_id": "focus-app-v2-finalkerem",
+    "storage_bucket": "focus-app-v2-finalkerem.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:579162621803:android:2296944cce3893e84dae2e",
+        "android_client_info": {
+          "package_name": "com.example.focus_app_v2_final"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBfBBjIEVj0o8j4uzA5aBVdOLve__9RwBc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
