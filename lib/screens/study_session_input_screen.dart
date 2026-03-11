@@ -5,6 +5,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:focus_app_v2_final/models/plan_model.dart';
 import 'package:focus_app_v2_final/providers/providers.dart';
 
+import '../utils/constants.dart'; // Sabitleri içe aktardık
+import '../utils/error_handler.dart'; // Hata yakalayıcıyı içe aktardık
+
 class StudySessionInputScreen extends ConsumerStatefulWidget {
   const StudySessionInputScreen({super.key});
 
@@ -17,18 +20,6 @@ class _StudySessionInputScreenState
     extends ConsumerState<StudySessionInputScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  final List<String> _subjects = [
-    'Türkçe',
-    'Matematik',
-    'Fizik',
-    'Kimya',
-    'Biyoloji',
-    'Din Kültürü',
-    'Coğrafya',
-    'Tarih',
-    'Felsefe'
-  ];
-
   String? _selectedSubject;
   String _topic = '';
   int _durationMinutes = 60;
@@ -37,9 +28,7 @@ class _StudySessionInputScreenState
   void _saveSession() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Hata: Kullanıcı oturumu bulunamadı.')),
-      );
+      ErrorHandler.showSnackBar(context, 'Hata: Kullanıcı oturumu bulunamadı.');
       return;
     }
 
@@ -67,14 +56,12 @@ class _StudySessionInputScreenState
 
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Çalışma kaydı başarıyla eklendi!')),
+          const SnackBar(content: Text('Çalışma kaydı başarıyla eklendi!'), backgroundColor: Colors.green),
         );
         Navigator.of(context).pop();
       } catch (e) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Kayıt hatası: $e')),
-        );
+        ErrorHandler.showSnackBar(context, e); // Özel hata yakalayıcıyı kullandık
       } finally {
         if (mounted) {
           setState(() {
@@ -142,7 +129,8 @@ class _StudySessionInputScreenState
             borderSide: BorderSide(color: Colors.black, width: 2)),
       ),
       initialValue: _selectedSubject,
-      items: _subjects.map((String subject) {
+      // Artık _subjects listesi yerine constants.dart içindeki yksSubjects listesini kullanıyoruz!
+      items: yksSubjects.map((String subject) {
         return DropdownMenuItem<String>(
           value: subject,
           child: Text(subject),

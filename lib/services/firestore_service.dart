@@ -2,11 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import '../models/aggregated_stats_model.dart';
 import '../models/chat_model.dart';
-import '../models/coach_model.dart';
 import '../models/message_model.dart';
-import '../models/student_model.dart';
 import '../models/user_model.dart';
-
 
 class FirestoreService {
   final FirebaseFirestore _db;
@@ -14,37 +11,23 @@ class FirestoreService {
   FirestoreService({FirebaseFirestore? firestore})
       : _db = firestore ?? FirebaseFirestore.instance;
 
-  // Sınıfın ana önbellek alanı
-  final Map<String, Map<String, dynamic>> _cache = {};
-
+  // FirestoreService içinde yer alan manuel "_cache" mekanizmasını sildik.
+  // Firebase Firestore arka planda kendi offline cache sistemini zaten mükemmel yönetir.
 
   Future<Map<String, dynamic>?> getDocument(
     String collectionPath,
     String documentId, {
     bool forceRefresh = false,
   }) async {
-    final cacheKey = '$collectionPath/$documentId';
-    if (!forceRefresh && _cache.containsKey(cacheKey)) {
-      debugPrint("CACHE HIT: $cacheKey");
-      return _cache[cacheKey];
-    }
-
-    debugPrint("FIRESTORE READ: $cacheKey (Force Refresh: $forceRefresh)");
-    final doc = await _db.collection(collectionPath).doc(documentId).get();
+    // GetOptions ile eğer zorunlu yenileme istenirse Server'dan, yoksa default davranış ile veriyi çekiyoruz.
+    final doc = await _db.collection(collectionPath).doc(documentId).get(
+      GetOptions(source: forceRefresh ? Source.server : Source.serverAndCache),
+    );
 
     if (doc.exists) {
-      final data = doc.data();
-      if (data != null) {
-        _cache[cacheKey] = data;
-      }
-      return data;
+      return doc.data();
     }
     return null;
-  }
-
-  void clearCache() {
-    _cache.clear();
-    debugPrint("FirestoreService cache temizlendi.");
   }
 
   Future<String> addDocument(
@@ -56,25 +39,11 @@ class FirestoreService {
   Future<void> updateDocument(String collectionPath, String documentId,
       Map<String, dynamic> data) async {
     await _db.collection(collectionPath).doc(documentId).update(data);
-    _cache.remove('$collectionPath/$documentId');
   }
 
   Future<void> deleteDocument(String collectionPath, String documentId) async {
     await _db.collection(collectionPath).doc(documentId).delete();
-    _cache.remove('$collectionPath/$documentId');
   }
-
-  CollectionReference<CoachModel> get coachesRef =>
-      _db.collection('coaches').withConverter<CoachModel>(
-            fromFirestore: CoachModel.fromFirestore,
-            toFirestore: (CoachModel model, options) => model.toFirestore(),
-          );
-
-  CollectionReference<StudentModel> get studentsRef =>
-      _db.collection('students').withConverter<StudentModel>(
-            fromFirestore: StudentModel.fromFirestore,
-            toFirestore: (StudentModel model, options) => model.toFirestore(),
-          );
 
   CollectionReference<ChatModel> get chatsRef =>
       _db.collection('chats').withConverter<ChatModel>(

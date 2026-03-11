@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:focus_app_v2_final/models/aggregated_stats_model.dart';
 import 'package:focus_app_v2_final/models/chat_model.dart';
 import 'package:focus_app_v2_final/models/lesson_model.dart';
+import 'package:focus_app_v2_final/models/message_model.dart'; // YENİ EKLENDİ
 import 'package:focus_app_v2_final/models/plan_model.dart';
 import 'package:focus_app_v2_final/models/topic_model.dart';
 import 'package:focus_app_v2_final/models/user_model.dart';
@@ -68,12 +69,19 @@ final currentUserProvider = StreamProvider.autoDispose<UserModel?>((ref) {
 
 // --- DATA (VERİ) PROVIDERS ---
 
+// Sınav türlerini getiren provider (YKS, LGS, KPSS vb.)
+final examTypesProvider = FutureProvider.autoDispose<List<String>>((ref) async {
+  return await ref.read(planRepositoryProvider).getExamTypes();
+});
+
 final studentsForCoachProvider = StreamProvider.autoDispose.family<List<UserModel>, String>((ref, coachId) {
   return ref.watch(userRepositoryProvider).getStudentsForCoach(coachId);
 });
 
-final assignedCoachProvider = FutureProvider.autoDispose.family<UserModel?, String>((ref, coachId) {
-  return ref.watch(userRepositoryProvider).getUserById(coachId);
+// BURADA FutureProvider YERİNE StreamProvider KULLANARAK VERİYİ GERÇEK ZAMANLI DİNLİYORUZ.
+// Böylece state güncellendiğinde ekran otomatik olarak tetiklenir ve "Yükleniyor" ekranında takılı kalmaz.
+final assignedCoachProvider = StreamProvider.autoDispose.family<UserModel?, String>((ref, coachId) {
+  return ref.watch(userRepositoryProvider).getUserStream(coachId);
 });
 
 final todaysPlansProvider = StreamProvider.autoDispose.family<List<PlanModel>, String>((ref, studentId) {
@@ -110,6 +118,10 @@ final lessonsForUserProvider = FutureProvider.autoDispose<List<LessonModel>>((re
 final topicsForLessonProvider = FutureProvider.autoDispose
     .family<List<TopicModel>, ({String examId, String lessonId})>((ref, params) {
   return ref.watch(planRepositoryProvider).getTopicsForLesson(params.examId, params.lessonId);
+});
+
+final chatMessagesProvider = StreamProvider.autoDispose.family<List<MessageModel>, String>((ref, chatId) {
+  return ref.watch(firestoreServiceProvider).getChatMessagesStream(chatId);
 });
 
 // --- DEĞİŞTİRİLMEMİŞ PROVIDER'LAR ---

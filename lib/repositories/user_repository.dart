@@ -34,15 +34,27 @@ class UserRepository {
       throw Exception('Bu ID bir koça ait değil.');
     }
 
-    await usersRef.doc(studentId).update({'coachId': coachId});
+    // Hem 'coachId' alanını güncelliyoruz, hem de coach_dashboard_service'in
+    // kullandığı 'coachConnection' objesini approved olarak ayarlıyoruz.
+    await usersRef.doc(studentId).update({
+      'coachId': coachId,
+      'coachConnection': {
+        'coachId': coachId,
+        'status': 'approved'
+      }
+    });
   }
 
-  Future<UserModel?> getUserById(String userId,
-      {bool forceRefresh = false}) async {
-    final docSnapshot = await usersRef.doc(userId).get(
-          GetOptions(source: forceRefresh ? Source.server : Source.cache),
-        );
-    return docSnapshot.data();
+  Future<UserModel?> getUserById(String userId) async {
+    // Sadece cache üzerinden okumak yerine sunucudan en güncel veriyi çekiyoruz.
+    // Çünkü cache'de veri yoksa 'null' dönüp UI tarafında hataya sebep oluyordu.
+    try {
+      final docSnapshot = await usersRef.doc(userId).get();
+      return docSnapshot.data();
+    } catch (e) {
+      debugPrint("getUserById hatası: $e");
+      return null;
+    }
   }
 
   Stream<UserModel?> getUserStream(String uid) {

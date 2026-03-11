@@ -75,6 +75,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Riverpod kullanarak mesajları dinliyoruz (StreamBuilder yerine)
+    final messagesAsyncValue = ref.watch(chatMessagesProvider(widget.chatId));
+
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.recipientName),
@@ -82,17 +85,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       body: Column(
         children: [
           Expanded(
-            child: StreamBuilder<List<MessageModel>>(
-              stream: ref.watch(firestoreServiceProvider).getChatMessagesStream(widget.chatId),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            child: messagesAsyncValue.when(
+              data: (messages) {
+                if (messages.isEmpty) {
                   return const Center(child: Text('Mesaj göndermeye başla!'));
                 }
-
-                final messages = snapshot.data!;
                 return ListView.builder(
                   reverse: true,
                   padding: const EdgeInsets.symmetric(vertical: 10),
@@ -104,6 +101,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                   },
                 );
               },
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (error, stack) => const Center(child: Text('Mesajlar yüklenemedi.')),
             ),
           ),
           _buildMessageComposer(),

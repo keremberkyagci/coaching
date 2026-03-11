@@ -28,6 +28,17 @@ class PlanRepository {
             toFirestore: (TopicModel model, options) => model.toFirestore(),
           );
 
+  Future<List<String>> getExamTypes() async {
+    try {
+      final snapshot = await _db.collection('exam_types').get();
+      // Veritabanındaki exam_types dökümanlarının ID'lerini döndürüyoruz (örn. YKS, LGS, vb.)
+      return snapshot.docs.map((doc) => doc.id).toList();
+    } catch (e) {
+      debugPrint("Hata (getExamTypes): $e");
+      return [];
+    }
+  }
+
   Future<List<LessonModel>> getLessonsForExam(String examId) async {
     try {
       final snapshot = await lessonsRef(examId).orderBy('order').get();

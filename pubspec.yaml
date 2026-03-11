@@ -22,12 +22,12 @@ dependencies:
   collection: any
 
   # --- Firebase Paketleri ---
-  firebase_core: ^2.25.4
-  firebase_auth: ^4.16.0
-  cloud_firestore: ^4.15.4
+  firebase_core: ^2.27.0
+  firebase_auth: ^4.17.8
+  cloud_firestore: ^4.15.8
 
   # --- UI/UX Bileşenleri ---
-  intl: ^0.20.2 # DÜZELTME: Sürüm çakışması giderildi.
+  intl: ^0.20.2
   table_calendar: ^3.1.1
   google_fonts: ^6.2.1
 

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart'; // Kopyalama için eklendi
+import 'package:flutter/services.dart'; 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/plan_model.dart';
 import '../models/user_model.dart';
@@ -7,8 +7,9 @@ import '../models/lesson_model.dart';
 import '../providers/providers.dart';
 import '../widgets/planner_base_view.dart';
 import '../widgets/task_editor.dart';
+import '../widgets/assign_coach_dialog.dart'; // YENİ EKLENDİ
 import 'chat_list_screen.dart';
-import 'edit_profile_screen.dart'; // Profili düzenleme ekranı için import
+import 'edit_profile_screen.dart'; 
 
 class StudentDashboardScreen extends ConsumerWidget {
   const StudentDashboardScreen({super.key});
@@ -295,73 +296,9 @@ class _ProfileTab extends ConsumerWidget {
   const _ProfileTab({required this.user});
 
   void _showAssignCoachDialog(BuildContext context, WidgetRef ref) {
-    final coachIdController = TextEditingController();
     showDialog(
       context: context,
-      builder: (dialogContext) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            bool isLoading = false;
-            String? errorText;
-
-            return AlertDialog(
-              title: const Text('Koç ile Eşleş'),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text('Eşleşmek istediğiniz koçun Kullanıcı ID sini girin.', style: Theme.of(context).textTheme.bodySmall),
-                  const SizedBox(height: 16),
-                  TextField(
-                    controller: coachIdController,
-                    decoration: InputDecoration(
-                      labelText: 'Koç ID',
-                      errorText: errorText,
-                    ),
-                  ),
-                ],
-              ),
-              actions: [
-                TextButton(
-                  onPressed: isLoading ? null : () => Navigator.of(dialogContext).pop(),
-                  child: const Text('İptal'),
-                ),
-                ElevatedButton(
-                  onPressed: isLoading ? null : () async {
-                    final coachId = coachIdController.text.trim();
-                    if (coachId.isEmpty) return;
-
-                    setState(() {
-                      isLoading = true;
-                      errorText = null;
-                    });
-                    
-                    final navigator = Navigator.of(dialogContext);
-                    final messenger = ScaffoldMessenger.of(context);
-
-                    try {
-                      await ref.read(userRepositoryProvider).assignCoachToStudent(user.id, coachId);
-                      ref.invalidate(currentUserProvider);
-                      
-                      navigator.pop();
-                      messenger.showSnackBar(const SnackBar(
-                        content: Text('Koç ile başarıyla eşleşildi!'),
-                        backgroundColor: Colors.green,
-                      ));
-                    } catch (e) {
-                      if (!context.mounted) return;
-                      setState(() {
-                        isLoading = false;
-                        errorText = e.toString().replaceFirst('Exception: ', '');
-                      });
-                    }
-                  },
-                  child: isLoading ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)) : const Text('Eşleş'),
-                ),
-              ],
-            );
-          },
-        );
-      },
+      builder: (context) => AssignCoachDialog(user: user),
     );
   }
 
@@ -396,7 +333,7 @@ class _ProfileTab extends ConsumerWidget {
             const SizedBox(height: 8),
             const Divider(),
             const SizedBox(height: 8),
-            _buildDetailRow(context, 'Kullanıcı ID', user.id),
+            _buildDetailRow(context, 'Kullanıcı ID', user.id, isCopiable: true),
             _buildCoachSection(context, ref),
             _buildDetailRow(context, 'Sınav Türü', user.examType),
             _buildDetailRow(context, 'Lise', user.highSchool),
