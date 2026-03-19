@@ -1,3 +1,17 @@
+// ============================================================
+// lib/services/auth_service.dart — Firebase kimlik doğrulama servisi
+//
+// Firebase Authentication işlemlerini sarmalar:
+//   - signUpWithEmailAndPassword : Yeni kullanıcı kaydı
+//   - signInWithEmailAndPassword : Mevcut kullanıcı girişi
+//   - signOut                    : Oturumu kapat
+//   - sendPasswordResetEmail     : Şifre sıfırlama e-postası gönder
+//   - authStateChanges           : Oturum değişikliklerini dinleyen stream
+//
+// DI (Dependency Injection) ile FirebaseAuth dışarıdan verilir —
+// bu sayede test ortamında mock kullanılabilir.
+// ============================================================
+
 import 'package:firebase_auth/firebase_auth.dart';
 
 class AuthService {

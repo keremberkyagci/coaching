@@ -1,3 +1,18 @@
+// ============================================================
+// lib/services/firestore_service.dart — Genel Firestore erişim servisi
+//
+// Temel CRUD işlemleri + chat sistemi + istatistik operasyonları burada toplanmıştır:
+//   - getDocument / addDocument / updateDocument / deleteDocument : Generic CRUD
+//   - chatsRef / getMessagesRef / getAggregatedStatsRef           : TypedRef converter'lar
+//   - getChatsStream / getChatMessagesStream                       : Gerçek zamanlı listeler
+//   - getOrCreateChat : İki kullanıcı arasında sohbet odasını bul ya da yarat
+//   - sendMessage     : Mesaj gönder ve sohbeti güncelle
+//   - markMessagesAsRead : Okunmamış mesajları toplu okundu işaretle (Firestore batch)
+//
+// NOT: Eski manuel "_cache" mekanizması kaldırılmıştır.
+//      Firestore kendi offline cache'ini otomatik yönetir.
+// ============================================================
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import '../models/aggregated_stats_model.dart';
@@ -21,8 +36,9 @@ class FirestoreService {
   }) async {
     // GetOptions ile eğer zorunlu yenileme istenirse Server'dan, yoksa default davranış ile veriyi çekiyoruz.
     final doc = await _db.collection(collectionPath).doc(documentId).get(
-      GetOptions(source: forceRefresh ? Source.server : Source.serverAndCache),
-    );
+          GetOptions(
+              source: forceRefresh ? Source.server : Source.serverAndCache),
+        );
 
     if (doc.exists) {
       return doc.data();
@@ -47,7 +63,8 @@ class FirestoreService {
 
   CollectionReference<ChatModel> get chatsRef =>
       _db.collection('chats').withConverter<ChatModel>(
-            fromFirestore: (snapshot, _) => ChatModel.fromMap(snapshot.data()!, snapshot.id),
+            fromFirestore: (snapshot, _) =>
+                ChatModel.fromMap(snapshot.data()!, snapshot.id),
             toFirestore: (ChatModel model, options) => model.toMap(),
           );
 
@@ -60,8 +77,13 @@ class FirestoreService {
         toFirestore: (MessageModel model, options) => model.toFirestore(),
       );
 
-  CollectionReference<AggregatedStatsModel> getAggregatedStatsRef(String studentId) =>
-      _db.collection('users').doc(studentId).collection('aggregatedStats').withConverter<AggregatedStatsModel>(
+  CollectionReference<AggregatedStatsModel> getAggregatedStatsRef(
+          String studentId) =>
+      _db
+          .collection('users')
+          .doc(studentId)
+          .collection('aggregatedStats')
+          .withConverter<AggregatedStatsModel>(
             fromFirestore: AggregatedStatsModel.fromFirestore,
             toFirestore: (AggregatedStatsModel model, _) => model.toFirestore(),
           );
@@ -73,7 +95,8 @@ class FirestoreService {
         .map((snapshot) => snapshot.docs.map((doc) => doc.data()).toList());
   }
 
-  Future<String> getOrCreateChat(String currentUserId, String otherUserId) async {
+  Future<String> getOrCreateChat(
+      String currentUserId, String otherUserId) async {
     final querySnapshot = await chatsRef
         .where('participants', arrayContains: currentUserId)
         .get();
@@ -108,14 +131,21 @@ class FirestoreService {
         .map((snapshot) => snapshot.docs.map((doc) => doc.data()).toList());
   }
 
-
-  Stream<List<AggregatedStatsModel>> getAggregatedStatsForStudent(String studentId) {
+  Stream<List<AggregatedStatsModel>> getAggregatedStatsForStudent(
+      String studentId) {
     return getAggregatedStatsRef(studentId)
         .snapshots()
         .map((snapshot) => snapshot.docs.map((doc) => doc.data()).toList());
   }
 
-  Future<void> sendMessage(String chatId, MessageModel message, UserModel sender) async {
+  Future<List<AggregatedStatsModel>> fetchAggregatedStatsForStudent(
+      String studentId) async {
+    final snapshot = await getAggregatedStatsRef(studentId).get();
+    return snapshot.docs.map((doc) => doc.data()).toList();
+  }
+
+  Future<void> sendMessage(
+      String chatId, MessageModel message, UserModel sender) async {
     await getMessagesRef(chatId).add(message);
 
     final chatUpdateData = {
@@ -128,24 +158,34 @@ class FirestoreService {
 
     await chatsRef.doc(chatId).update(chatUpdateData);
   }
-  
+
   Future<void> markMessagesAsRead(String chatId, String currentUserId) async {
-    final querySnapshot = await getMessagesRef(chatId)
-        .where('senderId', isNotEqualTo: currentUserId)
+    try {
+      final querySnapshot = await getMessagesRef(chatId)
         .where('isRead', isEqualTo: false)
         .get();
 
-    if (querySnapshot.docs.isEmpty) {
-      return;
+      if (querySnapshot.docs.isEmpty) {
+        return;
+      }
+
+      final batch = _db.batch();
+      int count = 0;
+
+      for (final doc in querySnapshot.docs) {
+        if (doc.data().senderId != currentUserId) {
+          batch.update(doc.reference, {'isRead': true});
+          count++;
+        }
+      }
+
+      if (count > 0) {
+        await batch.commit();
+        debugPrint('$count adet mesaj okundu olarak işaretlendi.');
+      }
+    } catch (e) {
+      debugPrint('Mesaj okundu işareti koyulurken hata: $e');
     }
-
-    final batch = _db.batch();
-
-    for (final doc in querySnapshot.docs) {
-      batch.update(doc.reference, {'isRead': true});
-    }
-
-    await batch.commit();
-    debugPrint('${querySnapshot.docs.length} adet mesaj okundu olarak işaretlendi.');
   }
 }
+

@@ -1,3 +1,18 @@
+// ============================================================
+// lib/services/planning_service.dart — Ders ve konu içerik servisi
+//
+// Firestore'daki 'exam_types' koleksiyonundan ders ve konu verilerini çeker.
+// PlanningService ←→ PlanRepository arasında da benzer metodlar vardır; bu servis
+// UI katmanından direkt çağrılabilir.
+//
+//   - getLessonsForExam(examType, lessonType?) : Sınav türüne göre dersleri getir
+//                                               Opsiyonel lessonType filtresi ile (TYT/AYT)
+//   - getTopicsForLesson(examType, lessonId)   : Derse ait konuları getir
+//                                               Sıralama 'order' alanına göre yapılır
+//
+// Hata yönetimi: Parse hatası olan tekil dökümanlar atlanır, diğerleri listelenir.
+// ============================================================
+
 import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/lesson_model.dart';

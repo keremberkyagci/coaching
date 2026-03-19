@@ -1,3 +1,21 @@
+// ============================================================
+// lib/screens/study_session_input_screen.dart — Manuel çalışma girişi ekranı
+//
+// Öğrencinin planlanmamış (ani) çalışma oturumlarını kaydetmesine olanak tanır.
+// (PlannerTab üzerinden gelen TaskResultDialog'dan farklı olarak bu ekran bağımsızdır.)
+//
+// Form alanları:
+//   - Ders seçimi  : constants.dart'taki yksSubjects listesinden dropdown
+//   - Konu adı     : Serbest metin girişi
+//   - Süre         : Slider (15-240 dakika arası, 15'er adım)
+//
+// Kaydetme akışı:
+//   1. Form doğrulanır
+//   2. PlanModel (activityType: study, isCompleted: true) oluşturulur
+//   3. planRepository.addPlan() ile plans koleksiyonuna kaydedilir
+//   4. Başarılıysa SnackBar gösterilir ve ekrandan çıkılır
+// ============================================================
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_auth/firebase_auth.dart';

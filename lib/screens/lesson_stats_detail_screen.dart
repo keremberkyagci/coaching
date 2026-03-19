@@ -3,14 +3,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../models/plan_model.dart';
 import '../providers/providers.dart';
+import 'lesson_monthly_chart_screen.dart';
 
 class LessonStatsDetailScreen extends ConsumerStatefulWidget {
   final String studentId;
+  final String lessonId;
   final String lessonName;
 
   const LessonStatsDetailScreen({
     super.key,
     required this.studentId,
+    required this.lessonId,
     required this.lessonName,
   });
 
@@ -29,6 +32,23 @@ class _LessonStatsDetailScreenState extends ConsumerState<LessonStatsDetailScree
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.lessonName),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.show_chart),
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => LessonMonthlyChartScreen(
+                    studentId: widget.studentId,
+                    lessonId: widget.lessonId,
+                    lessonName: widget.lessonName,
+                  ),
+                ),
+              );
+            },
+            tooltip: 'Aylık Grafik',
+          ),
+        ],
       ),
       body: Column(
         children: [

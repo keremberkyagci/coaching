@@ -1,3 +1,17 @@
+// ============================================================
+// lib/screens/last_week_summary_screen.dart — Haftalık özet ekranı
+//
+// Belirli bir öğrencinin geçmiş haftalarının plan özetini gösterir.
+// Koç tarafından StudentDetailScreen üzerinden açılır.
+//
+// Özellikler:
+//   - 7 günlük TabBar ile her güne ayrı sekme (Pzt → Paz)
+//   - Her sekmede "Öğrencinin Planı" ve "Koçun Planı" ayrı bölümlerde
+//   - Görevler tamamlanma durumuna göre ✓ veya ○ ikonu ile gösterilir
+//   - İleri/geri hafta navigasyonu: _goToPreviousWeek / _goToNextWeek
+//   - varsayılan olarak geçen haftayı açar (DateTime.now() - 7 gün)
+// ============================================================
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

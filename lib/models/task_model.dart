@@ -1,20 +1,20 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class TaskModel {
-  final String? id; // GÜNCELLENDİ: ID tekrar nullable yapıldı.
+  final String? id;
   final String title;
   final String description;
   final Timestamp? dueDate;
   final bool isCompleted;
   final String createdBy;
   final String assignedTo;
-  final Timestamp createdAt;
+  final dynamic createdAt; // Firestore'a yazarken FieldValue, okurken Timestamp olması için dynamic.
   final String? lessonId;
   final String? lessonName;
   final String? topicName;
 
   TaskModel({
-    this.id, // GÜNCELLENDİ: ID artık zorunlu değil.
+    this.id,
     required this.title,
     this.description = '',
     this.dueDate,
@@ -55,7 +55,8 @@ class TaskModel {
       'isCompleted': isCompleted,
       'createdBy': createdBy,
       'assignedTo': assignedTo,
-      'createdAt': createdAt,
+      // Kaydedilirken yerel zaman yerine sunucu zamanını kullanmak daha güvenlidir.
+      'createdAt': FieldValue.serverTimestamp(),
       if (lessonId != null) 'lessonId': lessonId,
       if (lessonName != null) 'lessonName': lessonName,
       if (topicName != null) 'topicName': topicName,
@@ -70,7 +71,7 @@ class TaskModel {
     bool? isCompleted,
     String? createdBy,
     String? assignedTo,
-    Timestamp? createdAt,
+    dynamic createdAt,
     String? lessonId,
     String? lessonName,
     String? topicName,

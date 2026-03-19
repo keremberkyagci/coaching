@@ -1,3 +1,19 @@
+// ============================================================
+// lib/screens/chat_screen.dart — Mesajlaşma ekranı
+//
+// İki kullanıcı arasındaki mesajları gerçek zamanlı gösterir ve yeni mesaj gönderir.
+//
+// Akış:
+//   - initState: Mevcut kullanıcı bilgisini yükle, eskiden okunmamış mesajları okundu işaretle
+//   - chatMessagesProvider(chatId): stream ile mesajları gerçek zamanlı dinle
+//   - _sendMessage(): FirestoreService.sendMessage() çağırır (mesaj + sohbet güncelleme)
+//
+// UI:
+//   - _buildMessageItem(): Gönderene göre sağ/sol hizalama, balon tasarımı, tick ikonları
+//   - _buildMessageComposer(): Alt kısımdaki metin kutusu + gönder butonu
+//   - Mesaj listesi reverse: true ile en son mesaj altta görünür
+// ============================================================
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -102,7 +118,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                 );
               },
               loading: () => const Center(child: CircularProgressIndicator()),
-              error: (error, stack) => const Center(child: Text('Mesajlar yüklenemedi.')),
+              error: (error, stack) {
+                debugPrint('Mesajları çekerken hata: $error');
+                return Center(child: Text('Mesajlar yüklenemedi: $error'));
+              },
             ),
           ),
           _buildMessageComposer(),

@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../models/user_model.dart';
-import '../providers/providers.dart';
+import '../../models/user_model.dart';
+import '../../providers/providers.dart';
 
 class AssignCoachDialog extends ConsumerStatefulWidget {
   final UserModel user;
+  final bool isFromRegistration;
 
-  const AssignCoachDialog({super.key, required this.user});
+  const AssignCoachDialog({super.key, required this.user, this.isFromRegistration = false});
 
   @override
   ConsumerState<AssignCoachDialog> createState() => _AssignCoachDialogState();
@@ -39,9 +40,11 @@ class _AssignCoachDialogState extends ConsumerState<AssignCoachDialog> {
     final messenger = ScaffoldMessenger.of(context);
 
     try {
-      await ref.read(userRepositoryProvider).assignCoachToStudent(widget.user.id, coachId);
+      await ref
+          .read(userRepositoryProvider)
+          .assignCoachToStudent(widget.user.id, coachId);
       ref.invalidate(currentUserProvider); // Güncel veriyi çek
-      
+
       navigator.pop();
       messenger.showSnackBar(const SnackBar(
         content: Text('Koç ile başarıyla eşleşildi!'),
@@ -80,7 +83,7 @@ class _AssignCoachDialogState extends ConsumerState<AssignCoachDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('İptal'),
+          child: Text(widget.isFromRegistration ? 'Hayır, tek çalışıyorum' : 'İptal'),
         ),
         ElevatedButton(
           onPressed: _isLoading ? null : _assignCoach,

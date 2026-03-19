@@ -1,3 +1,18 @@
+// ============================================================
+// lib/screens/coach_dashboard_screen.dart — Koç ana paneli
+//
+// Koçun tüm öğrencilerini ve istatistiklerini gördüğü, mesajlaştığı ve
+// profilini düzenlediği 3 sekmelik ana ekran:
+//   1. Öğrenciler (_StudentListTab) : studentsForCoachProvider ile koça bağlı öğrenci listesi
+//                                     Her öğrenci kartında ders bazlı başarı oranları (_StudentStats)
+//                                     Tıklanınca StudentDetailScreen'e geçiş
+//   2. Mesajlar (ChatListScreen)     : Ayrı widget; koç-öğrenci mesajlaşması
+//   3. Profil (_CoachProfileTab)     : Koç bilgileri, deneyim, biyografi, ID kopyalama
+//
+// Not: Öğrenci istatistikleri studentStatsProvider(student.id) ile çekilir —
+//      her kart, ilgili öğrencinin aggregatedStats koleksiyonunu dinler.
+// ============================================================
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // Kopyalama için eklendi
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -5,7 +20,7 @@ import '../models/user_model.dart';
 import '../providers/providers.dart';
 import 'chat_list_screen.dart';
 import 'student_detail_screen.dart';
-import 'lesson_stats_detail_screen.dart'; 
+import 'lesson_stats_detail_screen.dart';
 import 'edit_profile_screen.dart';
 
 class CoachDashboardScreen extends ConsumerWidget {
@@ -44,11 +59,12 @@ class _CoachDashboardBody extends ConsumerStatefulWidget {
   const _CoachDashboardBody({required this.coach});
 
   @override
-  ConsumerState<_CoachDashboardBody> createState() => _CoachDashboardBodyState();
+  ConsumerState<_CoachDashboardBody> createState() =>
+      _CoachDashboardBodyState();
 }
 
 class _CoachDashboardBodyState extends ConsumerState<_CoachDashboardBody> {
-  int _selectedIndex = 0; 
+  int _selectedIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -67,15 +83,16 @@ class _CoachDashboardBodyState extends ConsumerState<_CoachDashboardBody> {
         unselectedItemColor: Colors.grey,
         type: BottomNavigationBarType.fixed,
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.people_alt_outlined), label: 'Öğrenciler'),
-          BottomNavigationBarItem(icon: Icon(Icons.message_outlined), label: 'Mesajlar'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.people_alt_outlined), label: 'Öğrenciler'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.message_outlined), label: 'Mesajlar'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profil'),
         ],
       ),
     );
   }
 }
-
 
 class _StudentListTab extends ConsumerWidget {
   final UserModel coach;
@@ -99,14 +116,7 @@ class _StudentListTab extends ConsumerWidget {
               child: Column(
                 children: [
                   ListTile(
-                    leading: CircleAvatar(
-                      backgroundImage: student.profileImageUrl != null
-                          ? NetworkImage(student.profileImageUrl!)
-                          : null,
-                      child: student.profileImageUrl == null
-                          ? Text(student.name.isNotEmpty ? student.name[0] : '?')
-                          : null,
-                    ),
+
                     title: Text(student.name),
                     subtitle: Text(student.email),
                     trailing: const Icon(Icons.chevron_right),
@@ -129,7 +139,8 @@ class _StudentListTab extends ConsumerWidget {
         );
       },
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (err, stack) => Center(child: Text('Öğrenciler yüklenemedi: $err')),
+      error: (err, stack) =>
+          Center(child: Text('Öğrenciler yüklenemedi: $err')),
     );
   }
 }
@@ -167,6 +178,7 @@ class _StudentStats extends ConsumerWidget {
                   MaterialPageRoute(
                     builder: (_) => LessonStatsDetailScreen(
                       studentId: student.id,
+                      lessonId: stats.lessonId ?? '',
                       lessonName: stats.lessonName,
                     ),
                   ),
@@ -186,8 +198,10 @@ class _StudentStats extends ConsumerWidget {
           }).toList(),
         );
       },
-      loading: () => const SizedBox(height: 20, child: Center(child: LinearProgressIndicator())),
-      error: (err, stack) => const Text('İstatistik yüklenemedi.', style: TextStyle(fontSize: 12, color: Colors.red)),
+      loading: () => const SizedBox(
+          height: 20, child: Center(child: LinearProgressIndicator())),
+      error: (err, stack) => const Text('İstatistik yüklenemedi.',
+          style: TextStyle(fontSize: 12, color: Colors.red)),
     );
   }
 }
@@ -196,7 +210,8 @@ class _CoachProfileTab extends StatelessWidget {
   final UserModel coach;
   const _CoachProfileTab({required this.coach});
 
-  Widget _buildDetailRow(BuildContext context, String title, String? value, {bool isCopiable = false}) {
+  Widget _buildDetailRow(BuildContext context, String title, String? value,
+      {bool isCopiable = false}) {
     if (value == null || value.isEmpty) {
       return const SizedBox.shrink();
     }
@@ -230,41 +245,40 @@ class _CoachProfileTab extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            CircleAvatar(
-              radius: 50,
-              backgroundImage: coach.profileImageUrl != null && coach.profileImageUrl!.isNotEmpty
-                  ? NetworkImage(coach.profileImageUrl!)
-                  : null,
-              child: coach.profileImageUrl == null || coach.profileImageUrl!.isEmpty
-                  ? const Icon(Icons.person, size: 50)
-                  : null,
-            ),
-            const SizedBox(height: 16),
+
             Text(
               coach.name,
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+              style: Theme.of(context)
+                  .textTheme
+                  .headlineSmall
+                  ?.copyWith(fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
             SelectableText(
               coach.email,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey[600]),
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyMedium
+                  ?.copyWith(color: Colors.grey[600]),
             ),
             const SizedBox(height: 8),
             const Divider(),
             const SizedBox(height: 8),
-            _buildDetailRow(context, 'Kullanıcı ID', coach.id, isCopiable: true),
-            _buildDetailRow(context, 'Deneyim', '${coach.yearsOfCoaching ?? 0} yıl'),
-             if(coach.biography != null && coach.biography!.isNotEmpty) ...[
-                const SizedBox(height: 8),
-                Text('Hakkında', style: Theme.of(context).textTheme.titleMedium),
-                const SizedBox(height: 4),
-                Text(
-                  coach.biography!,
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-              ],
+            _buildDetailRow(context, 'Kullanıcı ID', coach.id,
+                isCopiable: true),
+            _buildDetailRow(
+                context, 'Deneyim', '${coach.yearsOfCoaching ?? 0} yıl'),
+            if (coach.biography != null && coach.biography!.isNotEmpty) ...[
+              const SizedBox(height: 8),
+              Text('Hakkında', style: Theme.of(context).textTheme.titleMedium),
+              const SizedBox(height: 4),
+              Text(
+                coach.biography!,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+            ],
             const SizedBox(height: 24),
             SizedBox(
               width: double.infinity,
@@ -272,8 +286,9 @@ class _CoachProfileTab extends StatelessWidget {
                 icon: const Icon(Icons.edit_outlined),
                 label: const Text('Profili Düzenle'),
                 onPressed: () {
-                   Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => EditProfileScreen(user: coach)),
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                        builder: (context) => EditProfileScreen(user: coach)),
                   );
                 },
                 style: ElevatedButton.styleFrom(

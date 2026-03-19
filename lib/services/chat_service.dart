@@ -1,3 +1,19 @@
+// ============================================================
+// lib/services/chat_service.dart — Mesajlaşma servisi
+//
+// FirestoreService'e alternatif/tamamlayıcı bir chat implementasyonu.
+// (Ana kodda FirestoreService kullanılmaktadır; bu dosya eski implementasyondur.)
+//
+//   - getChatsStream      : Kullanıcının tüm sohbet odalarını dinler
+//   - getMessagesStream   : Sohbet odasındaki mesajları dinler
+//   - createOrGetChat     : İki kullanıcı arasında oda oluştur ya da mevcut olanı bul
+//   - sendMessage         : Mesaj gönder, okunmamış sayacını artır (Firestore batch)
+//   - markChatAsRead      : Sohbeti okundu yap, mesajları güncelle
+//
+// Fark: Bu servis participants listesini sıralayarak kesin eşleşme sağlar.
+//       FirestoreService.getOrCreateChat() ise arrayContains ile esnek arama yapar.
+// ============================================================
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/chat_model.dart';
 import '../models/message_model.dart';

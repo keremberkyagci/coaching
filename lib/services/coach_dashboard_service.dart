@@ -1,3 +1,19 @@
+// ============================================================
+// lib/services/coach_dashboard_service.dart — Koç paneli veri servisi
+//
+// Koçun öğrencilerini ve bugünkü görev tamamlama oranlarını tek bir stream ile sağlar.
+//
+// İki yardımcı model içerir:
+//   - StudentProgress     : Tek öğrencinin görev tamamlama verisi
+//   - CoachDashboardData  : Tüm öğrencilerin toplu istatistiği
+//
+// getDashboardDataStream() çalışma mantığı:
+//   1. users koleksiyonundan koça bağlı "approved" öğrencileri dinle
+//   2. plans koleksiyonundan bugünkü planları TEK sorguda çek (whereIn ile)
+//   3. Her öğrenci için completedTasks / totalTasks hesapla
+//   4. CoachDashboardData olarak döndür
+// ============================================================
+
 // lib/services/coach_dashboard_service.dart
 
 import 'package:cloud_firestore/cloud_firestore.dart';

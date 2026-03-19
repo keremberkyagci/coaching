@@ -1,3 +1,19 @@
+// ============================================================
+// lib/repositories/user_repository.dart — Kullanıcı veri katmanı
+//
+// 'users' Firestore koleksiyonuna TypedConverter ile erişir (UserModel ↔ Map).
+// Bu sayede Firestore dökümanları doğrudan UserModel'e dönüşür.
+//
+// Metodlar:
+//   - addUser()              : Yeni kullanıcı oluştur (kayıt akışında çağrılır)
+//   - updateUserData()       : Belirli alanları güncelle (profil düzenleme)
+//   - assignCoachToStudent() : Öğrenciye koç ata; koç değilse hata fırlat
+//   - getUserById()          : ID ile kullanıcı getir (cache destekli)
+//   - getUserStream()        : Kullanıcıyı gerçek zamanlı dinle (AuthWrapper için kritik)
+//   - getStudentsForCoach()  : Koça bağlı tüm öğrencilerin stream'i
+//   - getAllUsersStream()     : Mevcut kullanıcı hariç tüm kullanıcılar
+// ============================================================
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart'; // debugPrint için eklendi
 import '../models/user_model.dart';
@@ -34,27 +50,15 @@ class UserRepository {
       throw Exception('Bu ID bir koça ait değil.');
     }
 
-    // Hem 'coachId' alanını güncelliyoruz, hem de coach_dashboard_service'in
-    // kullandığı 'coachConnection' objesini approved olarak ayarlıyoruz.
-    await usersRef.doc(studentId).update({
-      'coachId': coachId,
-      'coachConnection': {
-        'coachId': coachId,
-        'status': 'approved'
-      }
-    });
+    await usersRef.doc(studentId).update({'coachId': coachId});
   }
 
-  Future<UserModel?> getUserById(String userId) async {
-    // Sadece cache üzerinden okumak yerine sunucudan en güncel veriyi çekiyoruz.
-    // Çünkü cache'de veri yoksa 'null' dönüp UI tarafında hataya sebep oluyordu.
-    try {
-      final docSnapshot = await usersRef.doc(userId).get();
-      return docSnapshot.data();
-    } catch (e) {
-      debugPrint("getUserById hatası: $e");
-      return null;
-    }
+  Future<UserModel?> getUserById(String userId,
+      {bool forceRefresh = false}) async {
+    final docSnapshot = await usersRef.doc(userId).get(
+          GetOptions(source: forceRefresh ? Source.server : Source.serverAndCache),
+        );
+    return docSnapshot.data();
   }
 
   Stream<UserModel?> getUserStream(String uid) {

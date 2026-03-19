@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import '../models/plan_model.dart';
-import '../models/user_model.dart';
-import '../providers/providers.dart';
-import '../services/authorization_service.dart';
-import '../utils/constants.dart';
+import '../../models/plan_model.dart';
+import '../../models/user_model.dart';
+import '../../providers/providers.dart';
+import '../../services/authorization_service.dart';
+import '../../utils/constants.dart';
 
 class PlannerBaseView extends ConsumerStatefulWidget {
   final UserModel student;
@@ -43,7 +43,8 @@ class PlannerBaseView extends ConsumerStatefulWidget {
   ConsumerState<PlannerBaseView> createState() => _PlannerBaseViewState();
 }
 
-class _PlannerBaseViewState extends ConsumerState<PlannerBaseView> with SingleTickerProviderStateMixin {
+class _PlannerBaseViewState extends ConsumerState<PlannerBaseView>
+    with SingleTickerProviderStateMixin {
   late final TabController _tabController;
   final Map<int, ScrollController> _scrollControllers = {};
   final Map<int, Map<String, bool>> _sectionExpandedState = {};
@@ -52,17 +53,20 @@ class _PlannerBaseViewState extends ConsumerState<PlannerBaseView> with SingleTi
   void initState() {
     super.initState();
     int initialIndex = DateTime.now().weekday - 1;
-    _tabController = TabController(length: 7, vsync: this, initialIndex: initialIndex);
+    _tabController =
+        TabController(length: 7, vsync: this, initialIndex: initialIndex);
 
     for (int i = 0; i < 7; i++) {
       _scrollControllers[i] = ScrollController();
-      _sectionExpandedState.putIfAbsent(i, () => {'coach': true, 'student': true});
+      _sectionExpandedState.putIfAbsent(
+          i, () => {'coach': true, 'student': true});
     }
 
     _tabController.addListener(() {
       if (!_tabController.indexIsChanging && mounted) {
         final currentDayIndex = _tabController.index;
-        _sectionExpandedState.putIfAbsent(currentDayIndex, () => {'coach': true, 'student': true});
+        _sectionExpandedState.putIfAbsent(
+            currentDayIndex, () => {'coach': true, 'student': true});
         setState(() {});
         widget.onMarkPlansAsSeen?.call();
       }
@@ -87,7 +91,8 @@ class _PlannerBaseViewState extends ConsumerState<PlannerBaseView> with SingleTi
 
   void _toggleSectionExpanded(int dayIndex, String sectionType) {
     setState(() {
-      final bool currentState = _sectionExpandedState[dayIndex]?[sectionType] ?? true;
+      final bool currentState =
+          _sectionExpandedState[dayIndex]?[sectionType] ?? true;
       _sectionExpandedState[dayIndex]![sectionType] = !currentState;
     });
   }
@@ -101,12 +106,17 @@ class _PlannerBaseViewState extends ConsumerState<PlannerBaseView> with SingleTi
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              IconButton(icon: const Icon(Icons.chevron_left), onPressed: widget.onGoToPreviousWeek),
+              IconButton(
+                  icon: const Icon(Icons.chevron_left),
+                  onPressed: widget.onGoToPreviousWeek),
               Text(
                 _getWeekDateRange(widget.currentWeek),
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style:
+                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
-              IconButton(icon: const Icon(Icons.chevron_right), onPressed: widget.onGoToNextWeek),
+              IconButton(
+                  icon: const Icon(Icons.chevron_right),
+                  onPressed: widget.onGoToNextWeek),
             ],
           ),
         ),
@@ -120,7 +130,11 @@ class _PlannerBaseViewState extends ConsumerState<PlannerBaseView> with SingleTi
             return Tab(
                 child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: [Text(dateText, style: const TextStyle(fontSize: 10)), const SizedBox(height: 4), Text(dayName)],
+              children: [
+                Text(dateText, style: const TextStyle(fontSize: 10)),
+                const SizedBox(height: 4),
+                Text(dayName)
+              ],
             ));
           }),
         ),
@@ -144,11 +158,14 @@ class _PlannerBaseViewState extends ConsumerState<PlannerBaseView> with SingleTi
       return const Center(child: CircularProgressIndicator());
     }
     final allPlans = widget.dailyPlans[dayIndex] ?? [];
-    final studentPlans = allPlans.where((p) => p.createdBy == 'student').toList();
+    final studentPlans =
+        allPlans.where((p) => p.createdBy == 'student').toList();
     final coachPlans = allPlans.where((p) => p.createdBy == 'coach').toList();
-    final isCoachSectionExpanded = _sectionExpandedState[dayIndex]?['coach'] ?? true;
-    final isStudentSectionExpanded = _sectionExpandedState[dayIndex]?['student'] ?? true;
-    
+    final isCoachSectionExpanded =
+        _sectionExpandedState[dayIndex]?['coach'] ?? true;
+    final isStudentSectionExpanded =
+        _sectionExpandedState[dayIndex]?['student'] ?? true;
+
     return ListView(
       controller: _scrollControllers[dayIndex],
       padding: const EdgeInsets.all(16.0),
@@ -186,11 +203,14 @@ class _PlannerBaseViewState extends ConsumerState<PlannerBaseView> with SingleTi
     required Function(int, String) onToggleExpanded,
   }) {
     final authService = ref.watch(authorizationServiceProvider);
-    final canCreatePlan = authService.canAccessFeature(Feature.createPlan, widget.student);
-    
+    final canCreatePlan =
+        authService.canAccessFeature(Feature.createPlan, widget.student);
+
     final tytPlans = plans.where((p) => p.lessonType == 'TYT').toList();
     final aytPlans = plans.where((p) => p.lessonType == 'AYT').toList();
-    final otherPlans = plans.where((p) => p.lessonType != 'TYT' && p.lessonType != 'AYT').toList();
+    final otherPlans = plans
+        .where((p) => p.lessonType != 'TYT' && p.lessonType != 'AYT')
+        .toList();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -198,17 +218,21 @@ class _PlannerBaseViewState extends ConsumerState<PlannerBaseView> with SingleTi
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            Text(title,
+                style:
+                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 if (editable && canCreatePlan)
                   IconButton(
-                    icon: const Icon(Icons.add_circle_outline, color: Colors.blueAccent),
+                    icon: const Icon(Icons.add_circle_outline,
+                        color: Colors.blueAccent),
                     onPressed: () => widget.onAddNewTask(dayIndex),
                   ),
                 IconButton(
-                  icon: Icon(isExpanded ? Icons.expand_less : Icons.expand_more),
+                  icon:
+                      Icon(isExpanded ? Icons.expand_less : Icons.expand_more),
                   onPressed: () => onToggleExpanded(dayIndex, sectionType),
                 ),
               ],
@@ -228,7 +252,8 @@ class _PlannerBaseViewState extends ConsumerState<PlannerBaseView> with SingleTi
                       style: const TextStyle(color: Colors.grey))),
             )
           else ...[
-            ...otherPlans.map((plan) => _buildPlanCard(plan, editable, dayIndex)),
+            ...otherPlans
+                .map((plan) => _buildPlanCard(plan, editable, dayIndex)),
             if (tytPlans.isNotEmpty) ...[
               const Padding(
                 padding: EdgeInsets.only(top: 16.0, bottom: 4.0, left: 4.0),
@@ -238,7 +263,8 @@ class _PlannerBaseViewState extends ConsumerState<PlannerBaseView> with SingleTi
                         color: Colors.blueGrey,
                         fontSize: 16)),
               ),
-              ...tytPlans.map((plan) => _buildPlanCard(plan, editable, dayIndex)),
+              ...tytPlans
+                  .map((plan) => _buildPlanCard(plan, editable, dayIndex)),
             ],
             if (aytPlans.isNotEmpty) ...[
               const Padding(
@@ -249,7 +275,8 @@ class _PlannerBaseViewState extends ConsumerState<PlannerBaseView> with SingleTi
                         color: Colors.deepPurple,
                         fontSize: 16)),
               ),
-              ...aytPlans.map((plan) => _buildPlanCard(plan, editable, dayIndex)),
+              ...aytPlans
+                  .map((plan) => _buildPlanCard(plan, editable, dayIndex)),
             ],
           ]
       ],
@@ -264,19 +291,22 @@ class _PlannerBaseViewState extends ConsumerState<PlannerBaseView> with SingleTi
 
     switch (plan.activityType) {
       case ActivityType.study:
-        if (details is StudyDetails) { // Önce türü kontrol et
+        if (details is StudyDetails) {
+          // Önce türü kontrol et
           subtitleText = '${plan.topicName} - ${details.durationMinutes} dk';
         }
         break;
       case ActivityType.test:
-        if (details is TestDetails) { // Önce türü kontrol et
-          final count = details.plannedQuestionCount ?? details.actualQuestionCount;
+        if (details is TestDetails) {
+          // Önce türü kontrol et
+          final count = details.plannedQuestionCount ?? 0;
           subtitleText = '${plan.topicName} - $count soru';
         }
         break;
       case ActivityType.branchTrial:
-        if (details is TestDetails) { // Önce türü kontrol et
-          final count = details.plannedQuestionCount ?? details.actualQuestionCount;
+        if (details is TestDetails) {
+          // Önce türü kontrol et
+          final count = details.plannedQuestionCount ?? 0;
           titleText = plan.lessonName;
           subtitleText = 'Branş Denemesi - $count soru';
         }

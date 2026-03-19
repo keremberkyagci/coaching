@@ -1,3 +1,19 @@
+// ============================================================
+// lib/screens/coach_planner_screen.dart — Koç tarafı haftalık planlayıcı
+//
+// Koçun belirli bir öğrenci için haftalık plan oluşturduğu ekrandır.
+// PlannerScreen'e çok benzer, fakat önemli farklılıklar vardır:
+//   - createdBy: 'coach'    → Plan koç tarafından oluşturuldu olarak işaretlenir
+//   - StreamBuilder kullanır (PlannerScreen'deki Riverpod stream yerine)
+//   - Sınav türü dropdown'ı her zaman görünür (koç öğrencinin türünü değiştirebilir)
+//
+// Akış:
+//   1. initState: examType ile dersleri yükle + haftalık planları stream et
+//   2. Sınav türü değiştirilince dersler yeniden yüklenir
+//   3. Hafta ilerletilince yeni stream kurulur (_setupPlansStream)
+//   4. TaskEditor modal'ı ile yeni görev ekleme veya mevcut görevi düzenleme
+// ============================================================
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:focus_app_v2_final/providers/providers.dart';
@@ -5,8 +21,8 @@ import '../models/user_model.dart';
 import '../models/plan_model.dart';
 import '../models/lesson_model.dart';
 import '../models/topic_model.dart';
-import '../widgets/planner_base_view.dart';
-import '../widgets/task_editor.dart';
+import '../widgets/planner/planner_base_view.dart';
+import '../widgets/planner/task_editor.dart';
 import 'dart:async';
 
 class CoachPlannerScreen extends ConsumerStatefulWidget {
@@ -198,7 +214,7 @@ class CoachPlannerScreenState extends ConsumerState<CoachPlannerScreen> {
                   dailyPlans: dailyPlans,
                   isLoading: { for (var i = 0; i < 7; i++) i: snapshot.connectionState == ConnectionState.waiting },
                   currentWeek: _currentWeek,
-                  onEditTask: (plan, dayIndex) =>
+                  onEditTask: (PlanModel plan, int dayIndex) =>
                       _showTaskEditor(plan: plan, dayIndex: dayIndex),
                   onDeletePlan: _deletePlan,
                   onAddNewTask: (dayIndex) => _showTaskEditor(dayIndex: dayIndex),

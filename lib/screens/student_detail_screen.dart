@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/user_model.dart';
 import '../providers/providers.dart';
-import 'planner_screen.dart'; // YENİ: Öğrenci planlayıcısı için import
 
+// DÜZELTME: StatefulWidget -> ConsumerWidget ve constructor güncellendi.
 class StudentDetailScreen extends ConsumerWidget {
   final UserModel student;
 
@@ -13,18 +13,17 @@ class StudentDetailScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Koç ID'sini belirle
-    final String? coachId = student.coachId ?? student.coachConnection?['coachId'];
+    // Koç bilgisini almak için yeni bir provider oluşturabilir veya doğrudan Firestore'u kullanabiliriz.
+    // Şimdilik basitlik adına doğrudan bir FutureProvider kullanalım.
+    final coachProvider = FutureProvider.autoDispose<UserModel?>((provRef) async {
+      final coachId = student.coachConnection?['coachId'];
+      if (coachId != null) {
+        return await provRef.watch(userRepositoryProvider).getUserById(coachId);
+      }
+      return null;
+    });
 
-    // Eğer koç ID'si geçerliyse, önceden tanımlı provider üzerinden koçu çek
-    // (Böylece build metodu her çalıştığında FutureProvider yeniden üretilmez ve sonsuz döngü/sürekli loading olmaz)
-    final AsyncValue<UserModel?> coachAsyncValue =
-        (coachId != null && coachId.isNotEmpty)
-            ? ref.watch(assignedCoachProvider(coachId))
-            : const AsyncValue.data(null);
-
-    // Mevcut kullanıcı (Koç mu öğrenci mi kontrolü için)
-    final currentUser = ref.watch(currentUserProvider).value;
+    final coachAsyncValue = ref.watch(coachProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -39,16 +38,7 @@ class StudentDetailScreen extends ConsumerWidget {
                 padding: const EdgeInsets.all(16.0),
                 child: Row(
                   children: [
-                    CircleAvatar(
-                      radius: 40,
-                      backgroundImage: student.profileImageUrl != null
-                          ? NetworkImage(student.profileImageUrl!)
-                          : null,
-                      child: student.profileImageUrl == null
-                          ? const Icon(Icons.person_outline, size: 50)
-                          : null,
-                    ),
-                    const SizedBox(width: 20),
+
                     Expanded(
                       child: Text(
                         student.name,
@@ -61,41 +51,11 @@ class StudentDetailScreen extends ConsumerWidget {
               ),
             ),
             const SizedBox(height: 20),
-            
-            // Koç ise Programa Git butonu
-            if (currentUser?.userType == UserType.coach) ...[
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => PlannerScreen(student: student),
-                      ),
-                    );
-                  },
-                  icon: const Icon(Icons.calendar_month),
-                  label: const Text('Öğrencinin Programına Git (Planla)'),
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    backgroundColor: Colors.blueAccent,
-                    foregroundColor: Colors.white,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-            ],
-
             _buildInfoCard('Öğrenim Gördüğü Lise', student.highSchool ?? 'Belirtilmemiş'),
             // Koç bilgisini asenkron olarak göster
             coachAsyncValue.when(
               data: (coach) => _buildInfoCard('Bağlı Olduğu Koç', coach?.name ?? 'Koç atanmamış'),
-              loading: () => const Card(
-                child: ListTile(
-                  title: Text('Bağlı Olduğu Koç'),
-                  subtitle: LinearProgressIndicator(),
-                ),
-              ),
+              loading: () => const Card(child: ListTile(title: Text('Bağlı Olduğu Koç'), subtitle: LinearProgressIndicator())),
               error: (err, st) => _buildInfoCard('Bağlı Olduğu Koç', 'Bilgi alınamadı'),
             ),
             _buildInfoCard('İstediği Bölüm', student.targetMajor ?? 'Belirtilmemiş'),

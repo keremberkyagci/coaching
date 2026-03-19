@@ -2,16 +2,16 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 
 /// Bir öğrencinin belirli bir ders için toplanmış (aggregated) istatistiklerini temsil eder.
-/// Bu model, Cloud Functions tarafından önceden hesaplanan verileri okumak için kullanılır,
-/// bu da istemcinin yüzlerce plan dokümanı okumasını önleyerek maliyetleri düşürür.
 class AggregatedStatsModel extends Equatable {
+  final String? lessonId; // EKLENDİ
   final String lessonName;
   final int totalCorrect;
   final int totalIncorrect;
   final int totalEmpty;
-  final int totalCount; // Toplam soru veya test sayısı gibi ek metrikler eklenebilir.
+  final int totalCount; 
 
   const AggregatedStatsModel({
+    this.lessonId, // EKLENDİ
     required this.lessonName,
     this.totalCorrect = 0,
     this.totalIncorrect = 0,
@@ -19,13 +19,13 @@ class AggregatedStatsModel extends Equatable {
     this.totalCount = 0,
   });
 
-  /// Firestore'dan gelen veriden bir [AggregatedStatsModel] nesnesi oluşturur.
   factory AggregatedStatsModel.fromFirestore(
     DocumentSnapshot<Map<String, dynamic>> snapshot,
     SnapshotOptions? options,
   ) {
     final data = snapshot.data() ?? {};
     return AggregatedStatsModel(
+      lessonId: data['lessonId'] ?? snapshot.id, // lessonId yoksa döküman ID'sini (genelde lessonId olur) al
       lessonName: data['lessonName'] ?? 'Bilinmeyen Ders',
       totalCorrect: data['totalCorrect'] ?? 0,
       totalIncorrect: data['totalIncorrect'] ?? 0,
@@ -34,10 +34,9 @@ class AggregatedStatsModel extends Equatable {
     );
   }
 
-  /// Mevcut nesneyi Firestore'a yazılabilecek bir Map'e dönüştürür.
-  /// Not: Bu modele genellikle istemci tarafından yazılmaz, Cloud Function tarafından yazılır.
   Map<String, dynamic> toFirestore() {
     return {
+      if (lessonId != null) 'lessonId': lessonId,
       'lessonName': lessonName,
       'totalCorrect': totalCorrect,
       'totalIncorrect': totalIncorrect,
@@ -46,8 +45,8 @@ class AggregatedStatsModel extends Equatable {
     };
   }
 
-  /// Mevcut nesnenin bir kopyasını oluştururken, belirtilen alanları günceller.
   AggregatedStatsModel copyWith({
+    String? lessonId,
     String? lessonName,
     int? totalCorrect,
     int? totalIncorrect,
@@ -55,6 +54,7 @@ class AggregatedStatsModel extends Equatable {
     int? totalCount,
   }) {
     return AggregatedStatsModel(
+      lessonId: lessonId ?? this.lessonId,
       lessonName: lessonName ?? this.lessonName,
       totalCorrect: totalCorrect ?? this.totalCorrect,
       totalIncorrect: totalIncorrect ?? this.totalIncorrect,
@@ -64,5 +64,5 @@ class AggregatedStatsModel extends Equatable {
   }
 
   @override
-  List<Object?> get props => [lessonName, totalCorrect, totalIncorrect, totalEmpty, totalCount];
+  List<Object?> get props => [lessonId, lessonName, totalCorrect, totalIncorrect, totalEmpty, totalCount];
 }

@@ -1,3 +1,19 @@
+// ============================================================
+// lib/screens/login_screen.dart — Giriş ekranı
+//
+// Kullanıcının e-posta ve şifre ile sisteme giriş yapmasını sağlar.
+// Giriş başarılıysa AuthWrapper otomatik olarak ilgili Dashboard'a yönlendirir.
+//
+// Bileşenler:
+//   - _formKey          : Form doğrulama için GlobalKey
+//   - _emailController  : E-posta giriş alanı
+//   - _passwordController: Şifre giriş alanı
+//   - _signIn()         : AuthService.signInWithEmailAndPassword() çağırır
+//   - Kayıt linki       : RegistrationScreen'e yönlendirir
+//
+// Hata yönetimi: FirebaseAuthException yakalanır, SnackBar ile gösterilir.
+// ============================================================
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -87,7 +103,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   child: _isLoading ? const CircularProgressIndicator() : const Text('Giriş Yap'),
                 ),
                 TextButton(
-                  onPressed: () => Navigator.of(context).pushReplacement(
+                  onPressed: () => Navigator.of(context).push(
                     MaterialPageRoute(builder: (context) => const RegistrationScreen()),
                   ),
                   child: const Text('Hesabın yok mu? Kayıt ol.'),
