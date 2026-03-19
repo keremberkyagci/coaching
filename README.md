@@ -1,211 +1,80 @@
-📚 FOCUS – Study Planner & Coaching Platform
+# 📚 FOCUS – AI-Powered Study Planner & Coaching Platform
 
-FOCUS is a Flutter + Firebase based study planning and coaching platform designed for students preparing for major exams (such as YKS / LGS) and their mentors.
+A professional, scalable, and high-performance **Flutter** application integrated with **Firebase**, designed to bridge the gap between students and educational coaches. FOCUS simplifies exam preparation (YKS, LGS, KPSS) by providing a structured, real-time ecosystem for task management, performance analytics, and mentoring.
 
-The platform allows students to organize their daily study plans, while coaches can track progress, assign tasks, and guide students effectively.
+---
 
-🚀 Features
-👨‍🎓 Student Features
+## 🚀 Core Features
 
-Daily and weekly study planning
+### 👨‍🎓 For Students: Digital Mentor in Your Pocket
+- **Intelligent Planner:** Manage weekly study schedules with specialized tracks for different exam types.
+- **Task Management:** Real-time tracking of study sessions, test results, and trial exams.
+- **Performance Analytics:** Visualized data insights (Correct/Wrong/Blank ratios) powered by `fl_chart`.
+- **Self-Assessment:** Interactive **Star Rating System** for topic-based proficiency tracking.
+- **Manual Logging:** Quickly log ad-hoc study sessions with a sleek, slider-based UI.
 
-Topic-based study tasks
+### 👨‍🏫 For Coaches: Data-Driven Mentoring
+- **Unified Student Registry:** Monitor all assigned students from a single, real-time dashboard.
+- **Progress Tracking:** Instant visibility into student completion rates and daily study habits.
+- **Direct Intervention:** Remote task assignment and plan adjustments.
+- **Integrated Chat:** Professional communication hub to guide students without leaving the app.
 
-Test and trial exam planning
+---
 
-Task completion tracking
+## 🏢 Technical Architecture
 
-Performance statistics
+The project is built with **Scalability** and **Separation of Concerns** at its core. It follows a modernized **MVVM / Clean Architecture** hybrid:
 
-Real-time messaging with coaches
+### 🛠️ Tech Stack
+- **Frontend:** Flutter (Dart)
+- **State Management:** `Riverpod 2.0` (Comprehensive Provider usage)
+- **Backend:** Firebase (Auth, Cloud Firestore)
+- **Data Modeling:** `Equatable` (Immutable state management)
+- **Analytics:** `fl_chart` (Custom performance visualization)
 
-Personal study progress dashboard
+### 📂 Directory Structure
+- `lib/models/`: Immutable data structures (`UserModel`, `PlanModel`, `MessageModel`, etc.).
+- `lib/services/`: Pure business logic and Firebase API wrappers (`AuthService`, `ChatService`, `PerformanceService`).
+- `lib/repositories/`: Data access layer with Typed Firestore Converters (`PlanRepository`, `UserRepository`).
+- `lib/providers/`: The "Brain" of the app – centralizing all global state and data streams.
+- `lib/screens/`: Feature-sliced UI components.
+- `lib/widgets/`: Atomic UI units, reorganized into `dialogs/`, `planner/`, and `statistics/`.
 
-👨‍🏫 Coach Features
+---
 
-View all assigned students
+## 🇹🇷 Educational Component: Source Code Documentation
+To aid Computer Science students and developers, the entire codebase has been enriched with **Turkish Explanatory Comments**. Every major class, method, and architectural decision is documented directly in the source code to provide a clear understanding of:
+- Firebase initialization and Auth status wrapping.
+- Riverpod provider lifecycle and dependency injection.
+- Atomic Firestore updates and batch operations.
 
-Track student progress
+---
 
-Assign study tasks
+## ⚙️ Development Setup
 
-Monitor daily performance
+1. **Clone & Install:**
+   ```bash
+   git clone https://github.com/keremberkyagci/coaching.git
+   flutter pub get
+   ```
 
-Communicate with students through chat
+2. **Firebase Configuration:**
+   - Initialize Firebase on your local machine: `flutterfire configure`.
+   - The app uses `firebase_options.dart` for environment-specific settings.
 
-💬 Real-Time Chat
+3. **Run:**
+   - Launch on Android, iOS, or Web: `flutter run`.
 
-The app includes a real-time chat system allowing:
+---
 
-student ↔ coach communication
+## 👨‍💻 Author
+**Kerem Berk Yağcı**  
+*Computer Science Student & Developer ,On The Way to Become a Product Engineer *
 
-unread message tracking
+---
 
-last message preview
+> [!TIP]
+> This platform utilizes **Real-time Streams**, ensuring that any change made by a coach is instantly reflected on the student's dashboard without manual refresh.
 
-real-time updates
-
-📅 Smart Study Planner
-
-The planner allows:
-
-weekly study schedules
-
-TYT / AYT lesson separation
-
-study session duration tracking
-
-test question tracking
-
-branch trial planning
-
-📊 Study Statistics
-
-Students can track their performance with:
-
-correct answers
-
-incorrect answers
-
-empty answers
-
-success percentage
-
-🏗️ Tech Stack
-Frontend
-
-Flutter
-
-Riverpod (State Management)
-
-Material UI
-
-Backend
-
-Firebase Authentication
-
-Cloud Firestore
-
-Firebase Realtime Streams
-
-Architecture
-
-The project follows a clean and scalable architecture:
-
-UI (Screens)
-    ↓
-State Management (Riverpod Providers)
-    ↓
-Repositories
-    ↓
-Services
-    ↓
-Firebase (Auth + Firestore)
-📂 Project Structure
-lib/
- ├── models
- ├── services
- ├── repositories
- ├── providers
- ├── screens
- ├── widgets
- ├── utils
- └── main.dart
-🔐 Authentication
-
-User authentication is handled via Firebase Authentication.
-
-Supported features:
-
-email / password signup
-
-login
-
-password reset
-
-role-based navigation (Student / Coach)
-
-📡 Database
-
-The application uses Cloud Firestore.
-
-Main collections:
-
-users
-plans
-chats
-messages
-aggregatedStats
-lessons
-topics
-📱 Screens
-
-Main application screens include:
-
-Student Dashboard
-
-Coach Dashboard
-
-Study Planner
-
-Chat
-
-Student Statistics
-
-Profile
-
-⚙️ Setup
-
-1️⃣ Clone the repository
-
-git clone https://github.com/yourusername/focus-study-planner.git
-
-2️⃣ Install dependencies
-
-flutter pub get
-
-3️⃣ Configure Firebase
-
-Run:
-
-flutterfire configure
-
-4️⃣ Run the application
-
-flutter run
-🎯 Purpose of the Project
-
-This project was built as a learning project and portfolio application to explore:
-
-Flutter mobile development
-
-Firebase backend architecture
-
-scalable app structure
-
-real-time data handling
-
-study productivity tools
-
-🔮 Future Improvements
-
-Planned features include:
-
-AI-based study recommendations
-
-Pomodoro timer
-
-push notifications
-
-leaderboard system
-
-advanced analytics
-
-exam simulation tools
-
-👨‍💻 Author
-
-Kerem Berk Yağcı
-Computer Science Student
-
-💡 Built as a learning project to improve mobile development and system design skills.
+---
+*Built with ❤️ for better education.*
