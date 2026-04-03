@@ -1,4 +1,4 @@
-# 📚 FOCUS – AI-Powered Study Planner & Coaching Platform
+# 📚 FOCUS – Study Planner & Coaching Platform
 
 A professional, scalable, and high-performance **Flutter** application integrated with **Firebase**, designed to bridge the gap between students and educational coaches. FOCUS simplifies exam preparation (YKS, LGS, KPSS) by providing a structured, real-time ecosystem for task management, performance analytics, and mentoring.
 
