@@ -18,9 +18,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:focus_app_v2_final/models/aggregated_stats_model.dart';
-import 'package:focus_app_v2_final/models/chat_model.dart';
 import 'package:focus_app_v2_final/models/lesson_model.dart';
-import 'package:focus_app_v2_final/models/message_model.dart';
 import 'package:focus_app_v2_final/models/plan_model.dart';
 import 'package:focus_app_v2_final/models/study_session_model.dart';
 import 'package:focus_app_v2_final/models/topic_model.dart';
@@ -228,12 +226,6 @@ final topicsForLessonProvider = FutureProvider.autoDispose
       .getTopicsForLesson(params.examId, params.lessonId);
 });
 
-// Belirli bir chat odasındaki mesajları gerçek zamanlı dinler (ChatScreen için)
-final chatMessagesProvider = StreamProvider.autoDispose
-    .family<List<MessageModel>, String>((ref, chatId) {
-  return ref.watch(firestoreServiceProvider).getChatMessagesStream(chatId);
-});
-
 // Öğrencinin ders bazlı birikimli istatistiklerini gerçek zamanlı dinler (İstatistikler sekmesi için)
 final studentStatsProvider = StreamProvider.autoDispose
     .family<List<AggregatedStatsModel>, String>((ref, studentId) {
@@ -242,11 +234,7 @@ final studentStatsProvider = StreamProvider.autoDispose
       .getAggregatedStatsForStudent(studentId);
 });
 
-// Belirli kullanıcının dahil olduğu tüm sohbet odalarını dinler (ChatListScreen için)
-final chatsProvider =
-    StreamProvider.autoDispose.family<List<ChatModel>, String>((ref, userId) {
-  return ref.watch(firestoreServiceProvider).getChatsStream(userId);
-});
+// --- GLOBAL TOPIC PROVIDER ---
 
 final monthlyPerformanceForLessonProvider = FutureProvider.family.autoDispose<
     List<MonthlyPerformance>, ({String studentId, String lessonId})>(

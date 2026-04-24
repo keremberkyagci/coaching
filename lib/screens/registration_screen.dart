@@ -34,7 +34,7 @@ class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _coachIdController = TextEditingController();
-  
+
   UserType _selectedUserType = UserType.student;
   String _selectedExamType = 'YKS';
   bool _isLoading = false;
@@ -56,8 +56,10 @@ class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
           name: _nameController.text.trim(),
           email: _emailController.text.trim(),
           userType: _selectedUserType,
-          examType: _selectedUserType == UserType.student ? _selectedExamType : null,
-          coachConnection: _selectedUserType == UserType.student && _coachIdController.text.trim().isNotEmpty
+          examType:
+              _selectedUserType == UserType.student ? _selectedExamType : null,
+          coachConnection: _selectedUserType == UserType.student &&
+                  _coachIdController.text.trim().isNotEmpty
               ? {'coachId': _coachIdController.text.trim(), 'status': 'pending'}
               : null,
         );
@@ -81,7 +83,6 @@ class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
           // Koç ise de direkt root'a dön ki AuthWrapper üzerinden Dashboard'a insin
           Navigator.of(context).popUntil((route) => route.isFirst);
         }
-
       } on FirebaseAuthException catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -95,7 +96,7 @@ class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
       }
     }
   }
-  
+
   @override
   void dispose() {
     _nameController.dispose();
@@ -122,25 +123,31 @@ class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
               TextFormField(
                 controller: _nameController,
                 decoration: const InputDecoration(labelText: 'Ad Soyad'),
-                validator: (value) => (value == null || value.isEmpty) ? 'İsim alanı boş bırakılamaz.' : null,
+                validator: (value) => (value == null || value.isEmpty)
+                    ? 'İsim alanı boş bırakılamaz.'
+                    : null,
               ),
               const SizedBox(height: 15),
               TextFormField(
                 controller: _emailController,
                 decoration: const InputDecoration(labelText: 'E-posta'),
                 keyboardType: TextInputType.emailAddress,
-                validator: (value) => (value == null || !value.contains('@')) ? 'Geçerli bir e-posta girin.' : null,
+                validator: (value) => (value == null || !value.contains('@'))
+                    ? 'Geçerli bir e-posta girin.'
+                    : null,
               ),
               const SizedBox(height: 15),
               TextFormField(
                 controller: _passwordController,
                 decoration: const InputDecoration(labelText: 'Şifre'),
                 obscureText: true,
-                validator: (value) => (value == null || value.length < 6) ? 'Şifre en az 6 karakter olmalı.' : null,
+                validator: (value) => (value == null || value.length < 6)
+                    ? 'Şifre en az 6 karakter olmalı.'
+                    : null,
               ),
               const SizedBox(height: 15),
               DropdownButtonFormField<UserType>(
-                value: _selectedUserType,
+                initialValue: _selectedUserType,
                 decoration: const InputDecoration(labelText: 'Kullanıcı Tipi'),
                 items: const [
                   DropdownMenuItem(
@@ -163,8 +170,9 @@ class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
               if (_selectedUserType == UserType.student) ...[
                 const SizedBox(height: 15),
                 DropdownButtonFormField<String>(
-                  value: _selectedExamType,
-                  decoration: const InputDecoration(labelText: 'Hazırlanılan Sınav'),
+                  initialValue: _selectedExamType,
+                  decoration:
+                      const InputDecoration(labelText: 'Hazırlanılan Sınav'),
                   items: const [
                     DropdownMenuItem(
                       value: 'YKS',
@@ -187,9 +195,11 @@ class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
               const SizedBox(height: 30),
               ElevatedButton(
                 onPressed: _isLoading ? null : _signUp,
-                child: _isLoading ? const CircularProgressIndicator() : const Text('Hesap Oluştur'),
+                child: _isLoading
+                    ? const CircularProgressIndicator()
+                    : const Text('Hesap Oluştur'),
               ),
-               TextButton(
+              TextButton(
                 onPressed: () {
                   Navigator.of(context).pop();
                 },

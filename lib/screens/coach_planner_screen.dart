@@ -167,7 +167,7 @@ class CoachPlannerScreenState extends ConsumerState<CoachPlannerScreen> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
             child: DropdownButtonFormField<String>(
-              initialValue: _selectedExamType,
+              initialValue: examTypes.contains(_selectedExamType) ? _selectedExamType : null,
               hint: const Text('Sınav Türü Seçin'),
               decoration: const InputDecoration(
                 labelText: 'Sınav Türü',

@@ -6,7 +6,7 @@
 //   1. Öğrenciler (_StudentListTab) : studentsForCoachProvider ile koça bağlı öğrenci listesi
 //                                     Her öğrenci kartında ders bazlı başarı oranları (_StudentStats)
 //                                     Tıklanınca StudentDetailScreen'e geçiş
-//   2. Mesajlar (ChatListScreen)     : Ayrı widget; koç-öğrenci mesajlaşması
+//   2. AI Asistanı                   : Koç için yapay zeka asistanı
 //   3. Profil (_CoachProfileTab)     : Koç bilgileri, deneyim, biyografi, ID kopyalama
 //
 // Not: Öğrenci istatistikleri studentStatsProvider(student.id) ile çekilir —
@@ -18,7 +18,7 @@ import 'package:flutter/services.dart'; // Kopyalama için eklendi
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/user_model.dart';
 import '../providers/providers.dart';
-import 'chat_list_screen.dart';
+import 'ai_assistant_screen.dart';
 import 'student_detail_screen.dart';
 import 'lesson_stats_detail_screen.dart';
 import 'edit_profile_screen.dart';
@@ -70,7 +70,7 @@ class _CoachDashboardBodyState extends ConsumerState<_CoachDashboardBody> {
   Widget build(BuildContext context) {
     final List<Widget> widgetOptions = <Widget>[
       _StudentListTab(coach: widget.coach),
-      const ChatListScreen(),
+      const AIAssistantScreen(),
       _CoachProfileTab(coach: widget.coach),
     ];
 
@@ -86,7 +86,7 @@ class _CoachDashboardBodyState extends ConsumerState<_CoachDashboardBody> {
           BottomNavigationBarItem(
               icon: Icon(Icons.people_alt_outlined), label: 'Öğrenciler'),
           BottomNavigationBarItem(
-              icon: Icon(Icons.message_outlined), label: 'Mesajlar'),
+              icon: Icon(Icons.auto_awesome), label: 'AI'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profil'),
         ],
       ),

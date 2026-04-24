@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/user_model.dart';
 import '../providers/providers.dart';
+import 'coach_planner_screen.dart';
 
 // DÜZELTME: StatefulWidget -> ConsumerWidget ve constructor güncellendi.
 class StudentDetailScreen extends ConsumerWidget {
@@ -60,6 +61,27 @@ class StudentDetailScreen extends ConsumerWidget {
             ),
             _buildInfoCard('İstediği Bölüm', student.targetMajor ?? 'Belirtilmemiş'),
             _buildInfoCard('İstediği Sıralama', student.targetRank ?? 'Belirtilmemiş'),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                icon: const Icon(Icons.calendar_month),
+                label: const Text('Program Yap / Planlayıcı'),
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => CoachPlannerScreen(student: student),
+                    ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       ),

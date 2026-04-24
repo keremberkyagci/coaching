@@ -4,7 +4,7 @@
 // Uygulamanın en büyük ekranı. 4 sekme içerir:
 //   1. Ana Sayfa (_HomeTab)     : Bugünkü planlar + koç/öğrenci plan geçişi + istatistikler
 //   2. Planlayıcı (_PlannerTab) : Haftalık plan görünümü (PlannerBaseView widget'ı)
-//   3. Mesajlar (ChatListScreen): Sohbet listesi (ayrı ekran olarak entegre)
+//   3. AI Asistanı              : Yapay Zeka bot ekranı
 //   4. Profil (_ProfileTab)     : Öğrenci bilgileri, koç bağlantısı, profil düzenleme
 //
 // Önemli mantıklar:
@@ -27,7 +27,7 @@ import '../widgets/planner/task_editor.dart';
 import '../widgets/dialogs/assign_coach_dialog.dart';
 import '../widgets/dialogs/task_result_dialog.dart';
 import '../widgets/statistics/student_stats_view.dart';
-import 'chat_list_screen.dart';
+import 'ai_assistant_screen.dart';
 import 'edit_profile_screen.dart';
 
 class StudentDashboardScreen extends ConsumerWidget {
@@ -93,7 +93,7 @@ class _StudentDashboardBodyState extends ConsumerState<_StudentDashboardBody> {
     final List<Widget> widgetOptions = <Widget>[
       _HomeTab(student: userModel),
       _PlannerTab(student: userModel),
-      const ChatListScreen(),
+      const AIAssistantScreen(),
       _ProfileTab(user: userModel),
     ];
 
@@ -110,7 +110,7 @@ class _StudentDashboardBodyState extends ConsumerState<_StudentDashboardBody> {
           BottomNavigationBarItem(
               icon: Icon(Icons.calendar_today), label: 'Planlayıcı'),
           BottomNavigationBarItem(
-              icon: Icon(Icons.message_outlined), label: 'Mesajlar'),
+              icon: Icon(Icons.auto_awesome), label: 'AI'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profil'),
         ],
       ),

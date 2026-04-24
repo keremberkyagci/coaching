@@ -22,7 +22,8 @@ class LessonStatsDetailScreen extends ConsumerStatefulWidget {
       _LessonStatsDetailScreenState();
 }
 
-class _LessonStatsDetailScreenState extends ConsumerState<LessonStatsDetailScreen> {
+class _LessonStatsDetailScreenState
+    extends ConsumerState<LessonStatsDetailScreen> {
   ActivityType _selectedActivityType = ActivityType.test;
 
   @override
@@ -116,8 +117,9 @@ class _LessonStatsDetailScreenState extends ConsumerState<LessonStatsDetailScree
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 16,
-                            color:
-                                successRate >= 50 ? Colors.green : Colors.red,
+                            color: successRate >= 50
+                                ? const Color.fromARGB(255, 131, 211, 133)
+                                : const Color.fromARGB(255, 200, 110, 104),
                           ),
                         ),
                       ),
